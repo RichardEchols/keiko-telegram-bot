@@ -1,0 +1,74 @@
+[
+  {
+    "timestamp": "2026-01-28T11:28:39.035793-05:00",
+    "model": "claude-opus-4-5",
+    "input_tokens": 724,
+    "output_tokens": 310,
+    "cost": 0.03411,
+    "project": "Keiko Bot",
+    "task_type": "chat"
+  },
+  {
+    "timestamp": "2026-01-28T11:35:22.099968-05:00",
+    "model": "claude-opus-4-5",
+    "input_tokens": 686,
+    "output_tokens": 335,
+    "cost": 0.035415,
+    "project": null,
+    "task_type": "chat"
+  },
+  {
+    "timestamp": "2026-01-28T11:52:07.373330-05:00",
+    "model": "claude-opus-4-5",
+    "input_tokens": 666,
+    "output_tokens": 53,
+    "cost": 0.013965,
+    "project": null,
+    "task_type": "chat"
+  },
+  {
+    "timestamp": "2026-01-28T11:57:33.789032-05:00",
+    "model": "claude-opus-4-5",
+    "input_tokens": 624,
+    "output_tokens": 185,
+    "cost": 0.023235,
+    "project": null,
+    "task_type": "chat"
+  },
+  {
+    "timestamp": "2026-01-28T12:05:26.357294-05:00",
+    "model": "claude-opus-4-5",
+    "input_tokens": 973,
+    "output_tokens": 165,
+    "cost": 0.02697,
+    "project": "True Podcasts",
+    "task_type": "chat"
+  },
+  {
+    "timestamp": "2026-01-28T12:14:06.139067-05:00",
+    "model": "claude-opus-4-5",
+    "input_tokens": 721,
+    "output_tokens": 361,
+    "cost": 0.03789,
+    "project": null,
+    "task_type": "chat"
+  },
+  {
+    "timestamp": "2026-01-28T12:16:44.721913-05:00",
+    "model": "claude-opus-4-5",
+    "input_tokens": 706,
+    "output_tokens": 62,
+    "cost": 0.01524,
+    "project": null,
+    "task_type": "chat"
+  },
+  {
+    "timestamp": "2026-01-28T12:17:19.203556-05:00",
+    "model": "claude-opus-4-5",
+    "input_tokens": 661,
+    "output_tokens": 113,
+    "cost": 0.01839,
+    "project": null,
+    "task_type": "chat"
+  }
+]
