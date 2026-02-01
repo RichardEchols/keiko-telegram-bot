@@ -1,5 +1,5 @@
 """
-Keiko Smart Response - Intelligent clarification, confidence, and error recovery
+Kiyomi Smart Response - Intelligent clarification, confidence, and error recovery
 
 Features:
 - Smart clarification (ask ONE good question when uncertain)
@@ -119,7 +119,7 @@ TASK_PATTERNS = {
 
 def analyze_task(
     message: str,
-    last_keiko_response: Optional[str] = None,
+    last_kiyomi_response: Optional[str] = None,
     last_user_message: Optional[str] = None,
     current_project: Optional[str] = None
 ) -> TaskAnalysis:

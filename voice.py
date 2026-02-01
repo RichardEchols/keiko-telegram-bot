@@ -1,5 +1,5 @@
 """
-Keiko Voice - Text-to-Speech with ElevenLabs
+Kiyomi Voice - Text-to-Speech with ElevenLabs
 
 This module provides:
 - TTS generation using ElevenLabs API
@@ -16,8 +16,7 @@ import os
 
 from config import (
     ELEVENLABS_API_KEY,
-    ELEVENLABS_VOICE_RICK,
-    ELEVENLABS_VOICE_RICHARD,
+    ELEVENLABS_VOICE_IDS,
     BASE_DIR
 )
 
@@ -27,10 +26,11 @@ logger = logging.getLogger(__name__)
 ELEVENLABS_API_URL = "https://api.elevenlabs.io/v1/text-to-speech"
 
 # Voice settings
-DEFAULT_VOICE_ID = ELEVENLABS_VOICE_RICHARD  # Use Richard's cloned voice
-KEIKO_STABILITY = 0.5
-KEIKO_SIMILARITY = 0.75
-KEIKO_STYLE = 0.3
+# Use "richard" as default if available, otherwise first available, or None
+DEFAULT_VOICE_ID = ELEVENLABS_VOICE_IDS.get("richard") or (next(iter(ELEVENLABS_VOICE_IDS.values())) if ELEVENLABS_VOICE_IDS else None)
+KIYOMI_STABILITY = 0.5
+KIYOMI_SIMILARITY = 0.75
+KIYOMI_STYLE = 0.3
 
 # Temp directory for audio files
 VOICE_TEMP_DIR = BASE_DIR / "temp" / "voice"
@@ -81,9 +81,9 @@ async def generate_speech(
         "text": text,
         "model_id": "eleven_monolingual_v1",
         "voice_settings": {
-            "stability": KEIKO_STABILITY,
-            "similarity_boost": KEIKO_SIMILARITY,
-            "style": KEIKO_STYLE,
+            "stability": KIYOMI_STABILITY,
+            "similarity_boost": KIYOMI_SIMILARITY,
+            "style": KIYOMI_STYLE,
             "use_speaker_boost": True
         }
     }
@@ -169,11 +169,8 @@ def cleanup_old_voice_files(max_age_hours: int = 24):
 # VOICE OPTIONS
 # ============================================
 
-VOICE_OPTIONS = {
-    "richard": ELEVENLABS_VOICE_RICHARD,
-    "rick": ELEVENLABS_VOICE_RICK,
-    "default": DEFAULT_VOICE_ID,
-}
+VOICE_OPTIONS = ELEVENLABS_VOICE_IDS.copy()
+VOICE_OPTIONS["default"] = DEFAULT_VOICE_ID
 
 
 def get_voice_id(voice_name: str) -> str:

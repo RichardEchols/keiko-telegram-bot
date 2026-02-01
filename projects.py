@@ -1,11 +1,12 @@
 """
-Keiko Project Registry - Know all of Richard's projects
+Kiyomi Project Registry - Know all of Richard's projects
 
 This module provides:
 - Project detection from text/images
 - Project configs (path, tech, deploy, URL)
 - Quick access to project info
 """
+import os
 import re
 import logging
 from pathlib import Path
@@ -13,6 +14,10 @@ from typing import Optional, Dict, List
 from dataclasses import dataclass
 
 logger = logging.getLogger(__name__)
+
+# Base directories (configurable via env vars)
+_APPS_DIR = os.getenv("KIYOMI_APPS_DIR", str(Path.home() / "Apps"))
+_WORK_DIR = os.getenv("KIYOMI_WORK_DIR", str(Path.home() / "Desktop" / "Work"))
 
 
 @dataclass
@@ -38,7 +43,7 @@ class Project:
 PROJECTS: Dict[str, Project] = {
     "true-podcasts": Project(
         name="True Podcasts",
-        path="/Users/richardechols/Apps/true-podcasts",
+        path=f"{_APPS_DIR}/true-podcasts",
         tech="Next.js + Tailwind + Supabase",
         deploy_cmd="vercel --prod --force",
         url="https://true-podcasts.vercel.app",
@@ -48,7 +53,7 @@ PROJECTS: Dict[str, Project] = {
 
     "jw-companion": Project(
         name="JW Companion",
-        path="/Users/richardechols/Apps/jw-companion",
+        path=f"{_APPS_DIR}/jw-companion",
         tech="React + Vite + Tailwind",
         deploy_cmd="vercel --prod --force",
         url="https://jw-companion.vercel.app",
@@ -58,7 +63,7 @@ PROJECTS: Dict[str, Project] = {
 
     "nano-banana-studio": Project(
         name="Nano Banana Studio",
-        path="/Users/richardechols/Apps/nano-banana-studio",
+        path=f"{_APPS_DIR}/nano-banana-studio",
         tech="Python + Streamlit",
         deploy_cmd="# Streamlit Cloud deploy",
         url="https://nano-banana-studio.streamlit.app",
@@ -68,7 +73,7 @@ PROJECTS: Dict[str, Project] = {
 
     "yt-automation": Project(
         name="YT Automation",
-        path="/Users/richardechols/Apps/YTAutomation",
+        path=f"{_APPS_DIR}/YTAutomation",
         tech="Python",
         deploy_cmd="# Local script",
         url=None,
@@ -78,7 +83,7 @@ PROJECTS: Dict[str, Project] = {
 
     "premier-intelligence": Project(
         name="Premier Intelligence",
-        path="/Users/richardechols/Desktop/Work/premier-intelligence-assistant",
+        path=f"{_WORK_DIR}/premier-intelligence-assistant",
         tech="Next.js + Supabase",
         deploy_cmd="vercel --prod --force",
         url="https://premier-intelligence.vercel.app",
@@ -88,7 +93,7 @@ PROJECTS: Dict[str, Project] = {
 
     "healthquest": Project(
         name="HealthQuest",
-        path="/Users/richardechols/Apps/HealthQuest",
+        path=f"{_APPS_DIR}/HealthQuest",
         tech="Swift iOS",
         deploy_cmd="# Xcode build",
         url=None,
@@ -96,25 +101,18 @@ PROJECTS: Dict[str, Project] = {
         aliases=["health quest", "healthquest", "health app", "ios app"]
     ),
 
-    "keiko-telegram-bot": Project(
-        name="Keiko Bot",
-        path="/Users/richardechols/Apps/keiko-telegram-bot",
+    "kiyomi-engine": Project(
+        name="Kiyomi Bot",
+        path=f"{_APPS_DIR}/kiyomi-engine",
         tech="Python + Telegram",
-        deploy_cmd="launchctl kickstart -k gui/$(id -u)/com.richardechols.keiko",
+        deploy_cmd="launchctl kickstart -k gui/$(id -u)/com.kiyomi.engine",
         url=None,
         description="This bot!",
-        aliases=["keiko", "keiko bot", "telegram bot", "this bot"]
+        aliases=["kiyomi", "kiyomi bot", "telegram bot", "this bot"]
     ),
 
-    "richard-portfolio": Project(
-        name="Richard's Portfolio",
-        path="/Users/richardechols/Apps/richardechols-portfolio",
-        tech="Next.js + Tailwind",
-        deploy_cmd="vercel --prod --force",
-        url="https://richardechols.com",
-        description="Personal portfolio site",
-        aliases=["portfolio", "my site", "richardechols.com", "personal site"]
-    ),
+    # Personal project entries removed during cleanup
+    # Add new projects here as needed
 }
 
 

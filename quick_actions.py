@@ -1,5 +1,5 @@
 """
-Keiko Quick Actions - Telegram inline keyboards and quick responses
+Kiyomi Quick Actions - Telegram inline keyboards and quick responses
 
 Features:
 - Inline keyboard buttons for common actions
@@ -306,7 +306,7 @@ async def _handle_status(query, context, param: Optional[str]) -> None:
     tz = pytz.timezone(TIMEZONE)
     now = datetime.now(tz)
 
-    status = f"🦊 **Keiko Status**\n\n"
+    status = f"🦊 **Kiyomi Status**\n\n"
     status += f"🟢 Online\n"
     status += f"🕐 {now.strftime('%H:%M %Z')}\n"
 

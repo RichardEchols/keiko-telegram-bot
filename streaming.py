@@ -1,5 +1,5 @@
 """
-Keiko Streaming Progress - Real-time progress updates via Telegram message editing
+Kiyomi Streaming Progress - Real-time progress updates via Telegram message editing
 
 Features:
 - Edit messages in place to show progress

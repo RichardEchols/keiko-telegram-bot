@@ -1,5 +1,5 @@
 """
-Keiko Self-Update System - Modify own code safely
+Kiyomi Engine Self-Update System - Modify own code safely
 
 Features:
 - Parse update requests
@@ -26,7 +26,7 @@ logger = logging.getLogger(__name__)
 # Self-update configuration
 BACKUP_DIR = BASE_DIR / "backups"
 UPDATE_LOG_FILE = BASE_DIR / "update_log.json"
-KEIKO_FILES = [
+KIYOMI_FILES = [
     "bot.py",
     "executor.py",
     "config.py",
@@ -131,7 +131,7 @@ async def apply_update(
     description: str
 ) -> Tuple[bool, str]:
     """
-    Apply an update to a Keiko file.
+    Apply an update to a Kiyomi file.
 
     Args:
         file_name: Name of the file to update
@@ -142,8 +142,8 @@ async def apply_update(
         (success, message)
     """
     # Validate file name
-    if file_name not in KEIKO_FILES:
-        return False, f"Unknown file: {file_name}. Updatable files: {', '.join(KEIKO_FILES)}"
+    if file_name not in KIYOMI_FILES:
+        return False, f"Unknown file: {file_name}. Updatable files: {', '.join(KIYOMI_FILES)}"
 
     file_path = BASE_DIR / file_name
 
@@ -189,7 +189,7 @@ async def add_function_to_file(
     """
     Add a new function to a file.
     """
-    if file_name not in KEIKO_FILES:
+    if file_name not in KIYOMI_FILES:
         return False, f"Unknown file: {file_name}"
 
     file_path = BASE_DIR / file_name
@@ -220,7 +220,7 @@ async def modify_function(
     """
     Replace an existing function in a file.
     """
-    if file_name not in KEIKO_FILES:
+    if file_name not in KIYOMI_FILES:
         return False, f"Unknown file: {file_name}"
 
     file_path = BASE_DIR / file_name
@@ -310,17 +310,17 @@ def get_update_history(limit: int = 10) -> List[Dict]:
     return []
 
 
-async def restart_keiko() -> Tuple[bool, str]:
+async def restart_kiyomi() -> Tuple[bool, str]:
     """
-    Restart Keiko via launchctl.
+    Restart Kiyomi via launchctl.
     This will cause the current process to exit and launchd will restart it.
     """
     try:
         # Use launchctl to restart
-        plist_name = "com.keiko.telegram-bot"
+        plist_name = "com.kiyomi.engine"
 
         # Log the restart
-        logger.info("Keiko restart requested - reloading via launchctl")
+        logger.info("Kiyomi restart requested - reloading via launchctl")
 
         # First unload, then load
         # We need to do this in a way that allows us to exit gracefully
@@ -344,7 +344,7 @@ launchctl load ~/Library/LaunchAgents/{plist_name}.plist
             start_new_session=True  # Detach from parent
         )
 
-        return True, "Restart initiated - Keiko will be back in a few seconds"
+        return True, "Restart initiated - Kiyomi will be back in a few seconds"
 
     except Exception as e:
         logger.error(f"Error initiating restart: {e}")
@@ -356,11 +356,11 @@ async def process_self_update_request(request: str) -> Tuple[bool, str]:
     Process a natural language self-update request.
     Uses Claude to generate the code changes.
     """
-    # Build context about Keiko's structure
-    context = f"""You are helping update Keiko, a Telegram bot assistant.
+    # Build context about Kiyomi's structure
+    context = f"""You are helping update Kiyomi, a Telegram bot assistant.
 
-KEIKO'S FILE STRUCTURE:
-{chr(10).join(f'- {f}' for f in KEIKO_FILES)}
+KIYOMI'S FILE STRUCTURE:
+{chr(10).join(f'- {f}' for f in KIYOMI_FILES)}
 
 CRITICAL FILES (be extra careful):
 {chr(10).join(f'- {f}' for f in CRITICAL_FILES)}
@@ -387,7 +387,7 @@ If you cannot safely make this change, explain why."""
 
     try:
         process = await asyncio.create_subprocess_exec(
-            "/Users/richardechols/.local/bin/claude",
+            str(Path.home() / ".local" / "bin" / "claude"),
             "-p", context,
             "--dangerously-skip-permissions",
             cwd=str(BASE_DIR),
@@ -433,10 +433,10 @@ If you cannot safely make this change, explain why."""
         return False, f"Error: {e}"
 
 
-def list_keiko_files() -> List[Dict]:
-    """List all Keiko files with info."""
+def list_kiyomi_files() -> List[Dict]:
+    """List all Kiyomi files with info."""
     files = []
-    for file_name in KEIKO_FILES:
+    for file_name in KIYOMI_FILES:
         file_path = BASE_DIR / file_name
         if file_path.exists():
             stat = file_path.stat()

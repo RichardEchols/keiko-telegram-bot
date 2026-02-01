@@ -1,5 +1,5 @@
 """
-Keiko Monitoring - Proactive site health checks
+Kiyomi Monitoring - Proactive site health checks
 
 This module provides:
 - Periodic health checks for deployed sites

@@ -1,5 +1,5 @@
 """
-Keiko Session State - Track context across messages
+Kiyomi Session State - Track context across messages
 
 This module tracks:
 - Current project being worked on

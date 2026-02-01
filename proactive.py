@@ -1,5 +1,5 @@
 """
-Keiko Proactive System - Autonomous behaviors like Brock
+Kiyomi Engine Proactive System - Autonomous behaviors like Brock
 
 This module handles:
 1. 8:00 AM Silent Prep
@@ -14,6 +14,7 @@ This module handles:
 import asyncio
 import logging
 import json
+import os
 import re
 from datetime import datetime, timedelta
 from pathlib import Path
@@ -371,7 +372,7 @@ async def do_silent_prep() -> Dict:
                 results["files_read"].append(str(mem_file.name))
 
         # Read skill files (just list them for context)
-        skills_dir = Path("/Users/richardechols/Apps/claude-skills")
+        skills_dir = Path(os.getenv("KIYOMI_SKILLS_DIR", str(Path.home() / "kiyomi" / "skills")))
         if skills_dir.exists():
             results["skills_available"] = len(list(skills_dir.glob("*.md")))
 

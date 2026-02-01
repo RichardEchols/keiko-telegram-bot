@@ -1,0 +1,29 @@
+# TOOLS.md — Local Notes & Credentials
+
+*Store tool-specific notes, API details, and local configuration here.*
+*⚠️ Keep this file private. Don't commit it to git.*
+
+---
+
+## API Keys & Services
+
+### [Service Name]
+- **Key:** [your key]
+- **Purpose:** [what it's for]
+- **Docs:** [documentation URL]
+
+## Device Info
+
+### [Device Name]
+- **IP/Hostname:** [address]
+- **Notes:** [how to access, credentials, etc.]
+
+## Frequently Used
+
+- [Command or shortcut you use often]
+- [URL you reference regularly]
+- [Contact info you need quick access to]
+
+---
+
+*Your assistant reads this to know what tools are available and how to use them.*

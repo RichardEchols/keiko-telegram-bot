@@ -1,5 +1,5 @@
 """
-Keiko Swarm Intelligence - Auto-spawn and coordinate agent teams
+Kiyomi Engine Swarm Intelligence - Auto-spawn and coordinate agent teams
 
 Features:
 - Analyze tasks to determine if multiple agents are needed
@@ -166,10 +166,10 @@ If the task cannot be parallelized, return the original task in an array:
 
     try:
         process = await asyncio.create_subprocess_exec(
-            "/Users/richardechols/.local/bin/claude",
+            str(Path.home() / ".local" / "bin" / "claude"),
             "-p", decompose_prompt,
             "--dangerously-skip-permissions",
-            cwd="/Users/richardechols/Apps",
+            cwd=str(Path.home() / "Apps"),
             stdout=asyncio.subprocess.PIPE,
             stderr=asyncio.subprocess.PIPE,
         )
@@ -289,10 +289,10 @@ DO NOT ask questions - make reasonable decisions and proceed."""
         log_handle = open(agent.log_file, "a")
 
         process = await asyncio.create_subprocess_exec(
-            "/Users/richardechols/.local/bin/claude",
+            str(Path.home() / ".local" / "bin" / "claude"),
             "-p", agent_prompt,
             "--dangerously-skip-permissions",
-            cwd="/Users/richardechols/Apps",
+            cwd=str(Path.home() / "Apps"),
             stdout=log_handle,
             stderr=asyncio.subprocess.STDOUT,
         )
@@ -396,10 +396,10 @@ Provide a clear, organized summary of:
 
     try:
         process = await asyncio.create_subprocess_exec(
-            "/Users/richardechols/.local/bin/claude",
+            str(Path.home() / ".local" / "bin" / "claude"),
             "-p", aggregate_prompt,
             "--dangerously-skip-permissions",
-            cwd="/Users/richardechols/Apps",
+            cwd=str(Path.home() / "Apps"),
             stdout=asyncio.subprocess.PIPE,
             stderr=asyncio.subprocess.PIPE,
         )

@@ -1,5 +1,5 @@
 """
-Keiko Milestones - Progress detection and updates
+Kiyomi Milestones - Progress detection and updates
 
 This module:
 - Parses Claude CLI output for key milestones

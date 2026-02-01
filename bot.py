@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Keiko - Richard's Personal 24/7 AI Assistant
+Kiyomi - Richard's Personal 24/7 AI Assistant
 Main Telegram Bot
 """
 import asyncio
@@ -64,8 +64,8 @@ from monitoring import start_monitoring_loop, run_monitoring_check, generate_sta
 from voice import quick_speak, cleanup_voice_file
 from swarm import should_spawn_swarm, spawn_swarm, get_active_swarms, get_swarm_status
 from self_update import (
-    process_self_update_request, restart_keiko, get_update_history,
-    list_keiko_files, get_recent_backups
+    process_self_update_request, restart_kiyomi, get_update_history,
+    list_kiyomi_files, get_recent_backups
 )
 from escalation import get_escalation_stats, get_recent_escalations
 from corrections import get_all_preferences, get_correction_stats
@@ -91,6 +91,7 @@ from plugin_system import (
     reload_plugin, unload_plugin
 )
 from skill_loader import format_skill_list, get_skill_context_for_task, list_skills
+from automations import AutomationEngine
 from watchdog import start_health_monitor, record_activity, get_health_status, get_uptime, report_crash
 from connection_manager import safe_send, get_connection_status
 from computer_use import (
@@ -120,7 +121,7 @@ logger = logging.getLogger(__name__)
 pending_confirmations: Dict[int, str] = {}
 current_task: Dict = {}
 bot_start_time: datetime = None
-last_keiko_response: Optional[str] = None  # Track for correction detection
+last_kiyomi_response: Optional[str] = None  # Track for correction detection
 
 # Command history persistence
 COMMAND_HISTORY_FILE = BASE_DIR / "command_history.json"
@@ -392,7 +393,7 @@ async def cmd_viewhistory(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
 
     msg = f"{BOT_EMOJI} **Recent Conversation History** ({len(history)} messages)\n\n"
     for item in history[-10:]:  # Last 10 messages
-        role = "You" if item["role"] == "user" else "Keiko"
+        role = "You" if item["role"] == "user" else "Kiyomi"
         content = item["content"][:100] + "..." if len(item["content"]) > 100 else item["content"]
         timestamp = item.get("timestamp", "")[:16]
         msg += f"**{role}** ({timestamp}):\n{content}\n\n"
@@ -1033,13 +1034,13 @@ async def cmd_update_self(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
 
 
 async def cmd_restart(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    """Handle /restart command - restart Keiko."""
+    """Handle /restart command - restart Kiyomi."""
     if not is_authorized(update.effective_user.id):
         return
 
     await update.message.reply_text(f"{BOT_EMOJI} 🔄 Restarting... I'll be back in a few seconds!")
 
-    success, message = await restart_keiko()
+    success, message = await restart_kiyomi()
 
     if not success:
         await update.message.reply_text(f"{BOT_EMOJI} ❌ {message}")
@@ -1485,9 +1486,23 @@ async def cmd_openapp(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
 # MESSAGE HANDLER
 # ============================================
 
+def _is_first_interaction() -> bool:
+    """Check if this is the user's first ever interaction with Kiyomi."""
+    flag_file = BASE_DIR / "memory" / "user_initialized.flag"
+    return not flag_file.exists()
+
+
+def _mark_initialized() -> None:
+    """Mark that the user has been welcomed."""
+    flag_dir = BASE_DIR / "memory"
+    flag_dir.mkdir(parents=True, exist_ok=True)
+    flag_file = flag_dir / "user_initialized.flag"
+    flag_file.write_text(datetime.now().isoformat())
+
+
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Handle incoming messages."""
-    global current_task, pending_confirmations, last_keiko_response
+    global current_task, pending_confirmations, last_kiyomi_response
 
     user_id = update.effective_user.id
 
@@ -1505,7 +1520,43 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
     if not text:
         return
 
+    # --- First interaction welcome ---
+    if _is_first_interaction():
+        from config import OWNER_NAME as _owner_name
+        name = _owner_name or update.effective_user.first_name or "there"
+        welcome = (
+            f"✨ Hi {name}! I'm {BOT_NAME}, your AI assistant.\n\n"
+            f"I'll send you a morning brief every day at "
+            f"{getattr(__import__('config'), 'MORNING_BRIEF_HOUR', 8)}:"
+            f"{getattr(__import__('config'), 'MORNING_BRIEF_MINUTE', 30):02d} "
+            f"with weather, news, and your schedule.\n\n"
+            f"Try asking me anything, or use /help to see what I can do!"
+        )
+        try:
+            await update.message.reply_text(welcome)
+        except Exception as e:
+            logger.warning(f"Failed to send welcome message: {e}")
+        _mark_initialized()
+        # Continue processing the actual message below
+
     logger.info(f"Message from Richard: {sanitize_for_logging(text)[:100]}")
+
+    # Check for automation creation phrases
+    message_lower = text.lower()
+    if any(phrase in message_lower for phrase in ['every ', 'when i get', 'remind me', 'if my ', 'automate']):
+        try:
+            engine = AutomationEngine()
+            automation = engine.create_from_natural_language(text)
+            if automation:
+                engine.save_automation(automation)
+                await update.message.reply_text(
+                    f"✅ Automation created: {automation.name}\n\n"
+                    f"Trigger: {automation.trigger_type}\n"
+                    f"Action: {automation.action_type}"
+                )
+                return
+        except Exception as e:
+            logger.error(f"Automation creation failed: {e}")
 
     # Check for "continue" command - resume previous session
     if is_continue_command(text):
@@ -1517,7 +1568,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
                 reply_markup=build_continue_keyboard()
             )
             # Execute the continuation
-            result, success = await execute_claude(prompt, last_response=last_keiko_response)
+            result, success = await execute_claude(prompt, last_response=last_kiyomi_response)
             await send_long_message(update, result)
             return
         else:
@@ -1525,7 +1576,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
             return
 
     # Analyze the task for smart response
-    analysis = analyze_task(text, last_keiko_response)
+    analysis = analyze_task(text, last_kiyomi_response)
 
     # Check if clarification is needed
     needs_clarification, question = should_ask_clarification(analysis)
@@ -1617,10 +1668,10 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
     try:
         # No progress spam - just work and respond
         # Pass last response for correction detection
-        result, success = await execute_claude(text, last_response=last_keiko_response)
+        result, success = await execute_claude(text, last_response=last_kiyomi_response)
 
         # Update last response for future correction detection
-        last_keiko_response = result
+        last_kiyomi_response = result
 
         # Log to history
         command_history.append({
@@ -1717,7 +1768,7 @@ async def handle_media(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
 5. Report what you fixed and provide the URL if deployed
 
 If this is an error screenshot, DIAGNOSE IT AND FIX IT. Don't just describe what you see - take action.
-If it's the True Podcasts app, the code is at /Users/richardechols/Apps/true-podcasts/
+If it's the True Podcasts app, check the project registry for its path.
 """
 
             result, success = await execute_claude(prompt)

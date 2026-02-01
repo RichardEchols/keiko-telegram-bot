@@ -1,9 +1,9 @@
 """
-Keiko Skills System - Load and execute specialized skill files
+Kiyomi Engine Skills System - Load and execute specialized skill files
 
 Skills are markdown files with instructions for specific tasks.
-Located in /Users/richardechols/Apps/claude-skills/
 """
+import os
 import logging
 from pathlib import Path
 from typing import Optional, Dict, List
@@ -12,7 +12,7 @@ import re
 logger = logging.getLogger(__name__)
 
 # Skills directory
-SKILLS_DIR = Path("/Users/richardechols/Apps/claude-skills")
+SKILLS_DIR = Path(os.getenv("KIYOMI_SKILLS_DIR", str(Path.home() / "kiyomi" / "skills")))
 
 # Cache loaded skills
 _skills_cache: Dict[str, str] = {}
@@ -195,7 +195,8 @@ def inject_skill_context(task: str) -> str:
     if len(skill_content) > 5000:
         skill_content = skill_content[:5000] + "\n\n...(truncated)"
 
-    return f"""## Relevant Skill: {skill_name}
+    return f"""
+## Relevant Skill: {skill_name}
 
 {skill_content}
 

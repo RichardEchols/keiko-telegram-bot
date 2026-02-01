@@ -1,5 +1,5 @@
 """
-Keiko Connection Manager - Reliable network connections
+Kiyomi Connection Manager - Reliable network connections
 
 Features:
 - Auto-retry on connection failures

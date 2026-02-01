@@ -1,0 +1,24 @@
+# MEMORY.md — Long-Term Memory
+
+*Your assistant's curated knowledge. Important things it should always remember.*
+
+---
+
+## About You
+[Your assistant will fill this in as it learns about you]
+
+## Key Decisions
+[Important decisions and their reasoning]
+
+## Lessons Learned
+[Things that went wrong and what to do differently]
+
+## Important Dates
+[Birthdays, anniversaries, deadlines, recurring events]
+
+## Preferences Learned
+[Things your assistant noticed about how you like things done]
+
+---
+
+*This file grows over time. Your assistant updates it with things worth remembering long-term. Daily details go in memory/YYYY-MM-DD.md files instead.*

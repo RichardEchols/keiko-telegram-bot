@@ -1,5 +1,5 @@
 """
-Keiko Cost Tracking - Monitor API usage and spending
+Kiyomi Cost Tracking - Monitor API usage and spending
 
 Features:
 - Track API calls and estimated costs
@@ -320,7 +320,7 @@ def generate_cost_report() -> str:
     # Recent calls
     recent_calls = _cost_log[-10:]
 
-    report = f"""💰 **Keiko Cost Report**
+    report = f"""💰 **Kiyomi Cost Report**
 _{now.strftime("%Y-%m-%d %H:%M %Z")}_
 
 **Spending Summary:**

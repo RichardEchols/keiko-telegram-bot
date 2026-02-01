@@ -1,8 +1,8 @@
 """
-Keiko Computer Use - Browser and Desktop Control
+Kiyomi Computer Use - Browser and Desktop Control
 
 Uses Anthropic's computer use API to control the Mac Mini.
-Keiko can browse the web, fill forms, send emails, and run workflows.
+Kiyomi can browse the web, fill forms, send emails, and run workflows.
 """
 import asyncio
 import base64

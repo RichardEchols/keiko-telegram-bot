@@ -1,5 +1,5 @@
 """
-Keiko Watchdog - Ensure 24/7 reliability
+Kiyomi Watchdog - Ensure 24/7 reliability
 
 Features:
 - Health monitoring
@@ -33,9 +33,9 @@ CRASH_REPORT_FILE = BASE_DIR / "crash_reports.log"
 HEALTH_FILE = BASE_DIR / "health.json"
 
 
-class KeikoWatchdog:
+class KiyomiWatchdog:
     """
-    Watchdog to ensure Keiko stays healthy and running.
+    Watchdog to ensure Kiyomi stays healthy and running.
     """
 
     def __init__(self):
@@ -192,7 +192,7 @@ Metrics at crash:
             pass
 
     def should_restart(self) -> bool:
-        """Determine if Keiko should be restarted."""
+        """Determine if Kiyomi should be restarted."""
         if self._shutdown_requested:
             return False
 
@@ -203,14 +203,14 @@ Metrics at crash:
 
 
 # Global watchdog instance
-_watchdog: Optional[KeikoWatchdog] = None
+_watchdog: Optional[KiyomiWatchdog] = None
 
 
-def get_watchdog() -> KeikoWatchdog:
+def get_watchdog() -> KiyomiWatchdog:
     """Get or create the global watchdog instance."""
     global _watchdog
     if _watchdog is None:
-        _watchdog = KeikoWatchdog()
+        _watchdog = KiyomiWatchdog()
     return _watchdog
 
 
@@ -233,7 +233,7 @@ async def start_health_monitor(send_callback: Optional[Callable] = None) -> None
                 if send_callback:
                     issues = "\n".join(f"• {i}" for i in health["issues"])
                     await send_callback(
-                        f"⚠️ **Keiko Health Warning**\n\n{issues}\n\n"
+                        f"⚠️ **Kiyomi Health Warning**\n\n{issues}\n\n"
                         f"_Auto-recovery in progress..._"
                     )
 

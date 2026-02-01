@@ -1,7 +1,7 @@
 """
-Keiko Reminders System - Proactive notifications and follow-ups
+Kiyomi Reminders System - Proactive notifications and follow-ups
 
-Like ClawdBot, Keiko should proactively:
+Like ClawdBot, Kiyomi should proactively:
 1. Remind Richard of scheduled tasks
 2. Follow up on incomplete work
 3. Nudge about commitments

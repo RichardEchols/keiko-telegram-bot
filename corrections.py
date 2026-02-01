@@ -1,8 +1,8 @@
 """
-Keiko Corrections Learning - Learn from user corrections
+Kiyomi Corrections Learning - Learn from user corrections
 
 Features:
-- Detect when Richard corrects Keiko
+- Detect when Richard corrects Kiyomi
 - Extract the preference/correction
 - Store and apply in future interactions
 - Build preference profile over time
@@ -68,7 +68,7 @@ PREFERENCE_CATEGORIES = {
 }
 
 
-def detect_correction(message: str, last_keiko_response: Optional[str] = None) -> bool:
+def detect_correction(message: str, last_kiyomi_response: Optional[str] = None) -> bool:
     """
     Detect if a message is a correction.
     """
@@ -106,13 +106,13 @@ async def extract_preference(
     Use Claude to extract the preference from a correction.
     Returns (preference, category).
     """
-    prompt = f"""Richard corrected Keiko with this message:
+    prompt = f"""Richard corrected Kiyomi with this message:
 
 CORRECTION: {correction_text}
 
-{f'KEIKO SAID BEFORE: {original_response[:200]}...' if original_response else ''}
+{f'KIYOMI SAID BEFORE: {original_response[:200]}...' if original_response else ''}
 
-Extract the underlying preference or rule Richard wants Keiko to follow.
+Extract the underlying preference or rule Richard wants Kiyomi to follow.
 Express it as a clear, actionable instruction.
 
 Examples:
@@ -124,10 +124,10 @@ Return ONLY the extracted preference, nothing else. Keep it under 100 characters
 
     try:
         process = await asyncio.create_subprocess_exec(
-            "/Users/richardechols/.local/bin/claude",
+            str(Path.home() / ".local" / "bin" / "claude"),
             "-p", prompt,
             "--dangerously-skip-permissions",
-            cwd="/Users/richardechols/Apps",
+            cwd=str(Path.home() / "Apps"),
             stdout=asyncio.subprocess.PIPE,
             stderr=asyncio.subprocess.PIPE,
         )
@@ -245,7 +245,7 @@ def _update_preferences_file(preference: str, category: str) -> None:
 
 ---
 
-*Updated automatically when Richard corrects Keiko.*
+*Updated automatically when Richard corrects Kiyomi.*
 """
 
         # Find the right section
@@ -363,14 +363,14 @@ def get_correction_stats() -> Dict:
 
 async def process_potential_correction(
     message: str,
-    last_keiko_response: Optional[str] = None
+    last_kiyomi_response: Optional[str] = None
 ) -> Tuple[bool, Optional[str]]:
     """
     Process a message that might be a correction.
     Returns (was_correction, learned_preference).
     """
-    if not detect_correction(message, last_keiko_response):
+    if not detect_correction(message, last_kiyomi_response):
         return False, None
 
-    success, preference = await learn_from_correction(message, last_keiko_response)
+    success, preference = await learn_from_correction(message, last_kiyomi_response)
     return True, preference if success else None

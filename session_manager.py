@@ -1,5 +1,5 @@
 """
-Keiko Session Manager - Perfect conversation continuity
+Kiyomi Session Manager - Perfect conversation continuity
 
 Features:
 - Track active work sessions
@@ -303,7 +303,7 @@ def get_continuation_context() -> Optional[str]:
     if session.messages:
         context_parts.append("\n**Recent conversation:**")
         for msg in session.messages[-3:]:
-            role = "Richard" if msg.get("role") == "user" else "Keiko"
+            role = "Richard" if msg.get("role") == "user" else "Kiyomi"
             content = msg.get("content", "")[:100]
             context_parts.append(f"  {role}: {content}...")
 

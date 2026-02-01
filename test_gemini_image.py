@@ -9,7 +9,7 @@ from pathlib import Path
 
 # Load env from master env file
 def load_env():
-    env_file = Path("/Users/richardechols/Apps/.env.local")
+    env_file = Path(os.getenv("KIYOMI_ENV_FILE", str(Path.home() / ".env.local")))
     if env_file.exists():
         with open(env_file) as f:
             for line in f:

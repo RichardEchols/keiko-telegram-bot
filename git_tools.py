@@ -1,5 +1,5 @@
 """
-Keiko Git Tools - Git operations for version control
+Kiyomi Git Tools - Git operations for version control
 
 This module provides:
 - Auto-commit with good messages

@@ -1,7 +1,8 @@
 """
-Keiko Security - User validation and command filtering
+Kiyomi Engine Security - User validation and command filtering
 """
 import re
+from pathlib import Path
 from typing import Optional
 from config import ALLOWED_USER_IDS, ALLOWED_DIRECTORIES
 
@@ -84,7 +85,7 @@ def is_path_allowed(path: str) -> bool:
         return False
 
     # Normalize the path
-    normalized = path.replace("~", "/Users/richardechols")
+    normalized = path.replace("~", str(Path.home()))
 
     for allowed_dir in ALLOWED_DIRECTORIES:
         if normalized.startswith(allowed_dir):

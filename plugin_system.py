@@ -1,5 +1,5 @@
 """
-Keiko Plugin System - Easy extensibility with plugins
+Kiyomi Plugin System - Easy extensibility with plugins
 
 Features:
 - Load plugins from a plugins directory
@@ -44,19 +44,19 @@ class PluginInfo:
     error: Optional[str] = None
 
 
-class KeikoPlugin(ABC):
+class KiyomiPlugin(ABC):
     """
-    Base class for Keiko plugins.
+    Base class for Kiyomi plugins.
 
     To create a plugin:
     1. Create a .py file in the plugins directory
-    2. Define a class that inherits from KeikoPlugin
+    2. Define a class that inherits from KiyomiPlugin
     3. Implement the required methods
     4. Define PLUGIN_INFO at module level
     """
 
-    def __init__(self, keiko_api: 'PluginAPI'):
-        self.api = keiko_api
+    def __init__(self, kiyomi_api: 'PluginAPI'):
+        self.api = kiyomi_api
         self.name = "BasePlugin"
         self.version = "1.0.0"
 
@@ -94,7 +94,7 @@ class KeikoPlugin(ABC):
 
 class PluginAPI:
     """
-    API provided to plugins for interacting with Keiko.
+    API provided to plugins for interacting with Kiyomi.
     """
 
     def __init__(self, executor_fn, send_fn):
@@ -161,7 +161,7 @@ class PluginAPI:
 
 
 # Global plugin state
-_plugins: Dict[str, KeikoPlugin] = {}
+_plugins: Dict[str, KiyomiPlugin] = {}
 _plugin_info: Dict[str, PluginInfo] = {}
 _plugin_api: Optional[PluginAPI] = None
 
@@ -215,8 +215,8 @@ def load_plugin(plugin_path: Path) -> Tuple[bool, str]:
             return False, "Plugin missing Plugin class"
 
         plugin_class = module.Plugin
-        if not issubclass(plugin_class, KeikoPlugin):
-            return False, "Plugin class must inherit from KeikoPlugin"
+        if not issubclass(plugin_class, KiyomiPlugin):
+            return False, "Plugin class must inherit from KiyomiPlugin"
 
         # Instantiate plugin
         plugin = plugin_class(_plugin_api)
@@ -231,7 +231,7 @@ def load_plugin(plugin_path: Path) -> Tuple[bool, str]:
         return False, f"Error: {e}"
 
 
-async def _async_load_plugin(plugin: KeikoPlugin, info: PluginInfo) -> None:
+async def _async_load_plugin(plugin: KiyomiPlugin, info: PluginInfo) -> None:
     """Async helper to load plugin."""
     global _plugins, _plugin_info
 
@@ -323,7 +323,7 @@ def get_loaded_plugins() -> List[PluginInfo]:
     return list(_plugin_info.values())
 
 
-def get_plugin(name: str) -> Optional[KeikoPlugin]:
+def get_plugin(name: str) -> Optional[KiyomiPlugin]:
     """Get a loaded plugin by name."""
     return _plugins.get(name)
 

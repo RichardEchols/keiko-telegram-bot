@@ -1,5 +1,5 @@
 """
-Keiko Executor - Claude Code CLI wrapper with persistent memory
+Kiyomi Executor - Claude Code CLI wrapper with persistent memory
 
 Enhanced with:
 - Project awareness
@@ -11,6 +11,7 @@ import asyncio
 import subprocess
 import logging
 import json
+import os
 import re
 from pathlib import Path
 from datetime import datetime
@@ -37,14 +38,15 @@ from smart_response import (
     analyze_task, get_confidence_prefix, should_ask_clarification,
     get_recovery_strategy, attempt_recovery, TaskAnalysis
 )
+from model_router import classify_task as router_classify_task, select_model, execute_gemini, TaskType
 
 # Additional context files to always inject
-SKILLS_DIR = PathLib("/Users/richardechols/Apps/claude-skills")
+SKILLS_DIR = PathLib(os.getenv("KIYOMI_SKILLS_DIR", str(Path.home() / "kiyomi" / "skills")))
 STARTUP_FILE = WORKSPACE_DIR / "STARTUP.md"
 SESSION_LOG_FILE = WORKSPACE_DIR / "SESSION_LOG.md"
 ACTIVE_PROJECT_FILE = WORKSPACE_DIR / "ACTIVE_PROJECT.md"
 MASTER_SKILL_FILE = SKILLS_DIR / "MASTER_SKILL.md"
-MASTER_ENV_FILE = PathLib("/Users/richardechols/Apps/.env.local")  # Master env with all API keys
+MASTER_ENV_FILE = PathLib(os.getenv("KIYOMI_ENV_FILE", str(Path.home() / ".env.local")))  # Master env with all API keys
 import pytz
 
 logger = logging.getLogger(__name__)
@@ -189,7 +191,7 @@ def _detect_project_mention(text: str) -> Optional[str]:
         r"yt[- ]?automation",
         r"premier[- ]?intelligence",
         r"health[- ]?quest",
-        r"keiko",
+        r"kiyomi",
     ]
 
     text_lower = text.lower()
@@ -198,7 +200,8 @@ def _detect_project_mention(text: str) -> Optional[str]:
             return pattern.replace("[- ]?", "-").replace("s?", "")
 
     # Check for explicit path mentions
-    path_match = re.search(r"/Users/richardechols/Apps/([a-zA-Z0-9_-]+)", text)
+    _apps_dir = str(Path.home() / "Apps")
+    path_match = re.search(re.escape(_apps_dir) + r"/([a-zA-Z0-9_-]+)", text)
     if path_match:
         return path_match.group(1)
 
@@ -263,10 +266,10 @@ Keep it under 500 words.
 
     try:
         process = await asyncio.create_subprocess_exec(
-            "/Users/richardechols/.local/bin/claude",
+            str(Path.home() / ".local" / "bin" / "claude"),
             "-p", compact_prompt,
             "--dangerously-skip-permissions",
-            cwd="/Users/richardechols/Apps",
+            cwd=str(Path.home() / "Apps"),
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
         )
@@ -315,7 +318,7 @@ async def execute_claude(
         progress_callback: Optional async function to call with progress updates
         project: Optional pre-detected project
         check_for_swarm: Whether to check if this task needs a swarm
-        last_response: Last Keiko response (for correction detection)
+        last_response: Last Kiyomi response (for correction detection)
 
     Returns:
         Tuple of (response_text, success_bool)
@@ -334,6 +337,63 @@ async def execute_claude(
         task=prompt[:200],
         message={"role": "user", "content": prompt[:500]}
     )
+
+    # ========================================
+    # MULTI-MODEL ROUTING — Route to cheapest capable model
+    # ========================================
+    try:
+        skill_name = get_skill_for_task(prompt)
+        task_type = router_classify_task(prompt, skill_name)
+        selected_model = select_model(task_type)
+        logger.info(f"Model router: task_type={task_type.value}, selected={selected_model}")
+
+        if selected_model.startswith("gemini"):
+            # Build context for Gemini (same as Claude path)
+            gemini_project = project if project else detect_project_from_text(prompt)
+            gemini_context = await _build_context(gemini_project)
+            gemini_history = _format_history_for_prompt()
+            gemini_model_name = "gemini-2.0-flash" if selected_model == "gemini-flash" else "gemini-2.0-pro"
+
+            logger.info(f"Routing to Gemini ({gemini_model_name}) for task_type={task_type.value}")
+            gemini_result, gemini_success = await execute_gemini(
+                prompt=prompt,
+                model=gemini_model_name,
+                context=gemini_context,
+                history=gemini_history
+            )
+
+            if gemini_success and gemini_result:
+                # Log cost (Gemini is much cheaper)
+                input_tokens = estimate_tokens(prompt + gemini_context + gemini_history)
+                output_tokens = estimate_tokens(gemini_result)
+                cost = log_api_call(
+                    model=gemini_model_name,
+                    input_tokens=input_tokens,
+                    output_tokens=output_tokens,
+                    project=gemini_project.name if gemini_project else None,
+                    task_type=task_type.value
+                )
+                logger.info(f"Gemini call cost: ${cost:.6f} (vs Claude)")
+
+                # Save to history
+                _add_to_history("user", prompt)
+                _add_to_history("assistant", gemini_result)
+                _update_session_log(prompt, gemini_result, True)
+
+                update_session(
+                    result=gemini_result,
+                    message={"role": "assistant", "content": gemini_result[:500]},
+                    step_completed=prompt[:100]
+                )
+
+                return gemini_result, True
+            else:
+                logger.info("Gemini failed or returned empty, falling through to Claude CLI")
+    except Exception as e:
+        logger.warning(f"Model router error: {e}, falling through to Claude CLI")
+    # ========================================
+    # END MULTI-MODEL ROUTING — Fall through to Claude CLI
+    # ========================================
 
     # Check if this task needs a swarm
     if check_for_swarm:
@@ -362,7 +422,7 @@ async def execute_claude(
             working_dir = project.path
             logger.info(f"Using project directory: {project.name}")
         else:
-            working_dir = "/Users/richardechols/Apps"
+            working_dir = str(Path.home() / "Apps")
 
     # Update session state with project
     if project:
@@ -412,7 +472,7 @@ async def execute_claude(
 {history}
 ---
 
-You are Keiko, Richard's AI assistant. Be direct and helpful. Read files when you need more context.{skill_context}
+You are Kiyomi, Richard's AI assistant. Be direct and helpful. Read files when you need more context.{skill_context}
 
 **Richard:** {enhanced_prompt}
 """
@@ -422,7 +482,7 @@ You are Keiko, Richard's AI assistant. Be direct and helpful. Read files when yo
     try:
         # Run claude code CLI with full permissions (Richard's personal bot)
         process = await asyncio.create_subprocess_exec(
-            "/Users/richardechols/.local/bin/claude",
+            str(Path.home() / ".local" / "bin" / "claude"),
             "-p", full_prompt,
             "--dangerously-skip-permissions",
             cwd=working_dir,
@@ -523,7 +583,7 @@ You are Keiko, Richard's AI assistant. Be direct and helpful. Read files when yo
         input_tokens = estimate_tokens(full_prompt)
         output_tokens = estimate_tokens(result)
         cost = log_api_call(
-            model="claude-opus-4-5",  # Keiko uses Claude Code which uses Opus
+            model="claude-opus-4-5",  # Kiyomi uses Claude Code which uses Opus
             input_tokens=input_tokens,
             output_tokens=output_tokens,
             project=project.name if project else None,
@@ -673,8 +733,8 @@ async def _build_context(project: Optional[Project] = None) -> str:
     # File paths reference - let Claude read on demand
     context_parts.append(f"""## Key Paths (Read these when needed)
 - **Env/API keys:** {MASTER_ENV_FILE}
-- **Skills:** /Users/richardechols/Apps/claude-skills/
-- **Apps:** /Users/richardechols/Apps/
+- **Skills:** {SKILLS_DIR}
+- **Apps:** {Path.home() / 'Apps'}
 - **Error patterns:** {WORKSPACE_DIR / "ERROR_PATTERNS.md"}
 - **Projects:** {WORKSPACE_DIR / "PROJECTS.md"}
 - **Commitments:** {WORKSPACE_DIR / "COMMITMENTS.md"}""")
@@ -746,7 +806,7 @@ async def execute_shell(command: str, working_dir: Optional[str] = None) -> Tupl
         Tuple of (output, success_bool)
     """
     if working_dir is None:
-        working_dir = "/Users/richardechols/Apps"
+        working_dir = str(Path.home() / "Apps")
 
     try:
         process = await asyncio.create_subprocess_shell(
@@ -839,7 +899,7 @@ async def spawn_subagent(
     global _running_subagents
 
     if working_dir is None:
-        working_dir = "/Users/richardechols/Apps"
+        working_dir = str(Path.home() / "Apps")
 
     # Create log directory
     SUBAGENT_LOG_DIR.mkdir(parents=True, exist_ok=True)
@@ -850,7 +910,7 @@ async def spawn_subagent(
     log_file = SUBAGENT_LOG_DIR / f"{task_id}_{timestamp}.log"
 
     # Build prompt for sub-agent
-    subagent_prompt = f"""You are a Keiko sub-agent running in the background.
+    subagent_prompt = f"""You are a Kiyomi sub-agent running in the background.
 
 TASK ID: {task_id}
 TASK: {task_description}
@@ -876,7 +936,7 @@ DO NOT ask questions - make reasonable decisions and proceed.
 
         # Spawn the process
         process = await asyncio.create_subprocess_exec(
-            "/Users/richardechols/.local/bin/claude",
+            str(Path.home() / ".local" / "bin" / "claude"),
             "-p", subagent_prompt,
             "--dangerously-skip-permissions",
             cwd=working_dir,

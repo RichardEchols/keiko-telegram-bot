@@ -1,0 +1,32 @@
+# HEARTBEAT.md — Background Task Queue
+
+*Your assistant checks this file periodically. Add tasks here for it to work on when you're not chatting.*
+
+---
+
+## Pending Tasks
+
+- [ ] [Task 1 — describe what needs to be done]
+- [ ] [Task 2 — describe what needs to be done]
+
+## Completed
+
+- [x] [Example completed task]
+
+---
+
+## How This Works
+
+Your assistant runs 24/7. When you're not actively messaging it, it checks this file and works through pending tasks. Think of it as a to-do list for your AI.
+
+**Good tasks for the background queue:**
+- Research something
+- Organize files
+- Draft a document
+- Check on a project
+- Update memory files
+
+**Bad tasks for the background queue:**
+- Anything that needs your approval before acting
+- Sending emails or messages (put these in COMMITMENTS.md with rules)
+- Anything urgent (just tell your assistant directly)

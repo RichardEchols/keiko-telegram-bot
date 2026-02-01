@@ -1,7 +1,7 @@
 """
-Keiko Learning System - Continuous background learning and self-improvement
+Kiyomi Learning System - Continuous background learning and self-improvement
 
-Keiko should never be idle. When not responding to Richard, she should:
+Kiyomi should never be idle. When not responding to Richard, she should:
 1. Review her memory files
 2. Read her skill files
 3. Review conversation history
@@ -15,13 +15,14 @@ from pathlib import Path
 from typing import Optional, Callable
 import pytz
 import json
+import os
 
 from config import TIMEZONE, BASE_DIR, WORKSPACE_DIR, MEMORY_DIR
 
 logger = logging.getLogger(__name__)
 
 # Paths to learn from
-SKILLS_DIR = Path("/Users/richardechols/Apps/claude-skills")
+SKILLS_DIR = Path(os.getenv("KIYOMI_SKILLS_DIR", str(Path.home() / "kiyomi" / "skills")))
 CONVERSATION_HISTORY_FILE = BASE_DIR / "conversation_history.json"
 
 # Learning state
@@ -43,7 +44,7 @@ async def start_learning_loop(notify_callback: Optional[Callable] = None) -> Non
     """
     global _is_learning, _last_learning_time
 
-    logger.info("Starting Keiko learning loop...")
+    logger.info("Starting Kiyomi learning loop...")
 
     learning_cycle = 0
 

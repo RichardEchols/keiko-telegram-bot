@@ -1,5 +1,5 @@
 """
-Keiko Universal File Handler - Handle any file type seamlessly
+Kiyomi Universal File Handler - Handle any file type seamlessly
 
 Features:
 - Detect file type and handle appropriately

@@ -1,5 +1,5 @@
 """
-Keiko Web Tools - Web search, fetch, and browser capabilities
+Kiyomi Web Tools - Web search, fetch, and browser capabilities
 
 Like Brock's web tools:
 - web_search: Search via API

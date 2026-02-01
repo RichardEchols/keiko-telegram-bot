@@ -1,0 +1,37 @@
+# COMMITMENTS.md — What Your Assistant Does Every Day
+
+*Define your assistant's daily routines here. It reads this file every session.*
+
+---
+
+## Daily Routines
+
+### Morning — [Time]
+1. Check today's calendar
+2. Flag any upcoming deadlines
+3. Send morning summary
+4. [Add your own morning tasks]
+
+### End of Day — [Time]
+1. Summarize today's activities
+2. Preview tomorrow's schedule
+3. Flag anything pending
+4. [Add your own EOD tasks]
+
+### Weekly — [Day]
+1. Week-in-review summary
+2. Upcoming week preview
+3. [Add weekly tasks]
+
+---
+
+## Standing Agreements
+
+- [Add promises and rules your assistant should always follow]
+- [e.g., "Always remind me about X on Fridays"]
+- [e.g., "Never schedule meetings before 10 AM"]
+- [e.g., "Check email every 2 hours"]
+
+---
+
+*This file is your assistant's to-do list. Add routines, remove ones you don't need, make it yours.*

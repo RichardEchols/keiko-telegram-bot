@@ -1,5 +1,5 @@
 """
-Keiko Memory Manager - Persistent memory file operations
+Kiyomi Memory Manager - Persistent memory file operations
 """
 import logging
 from datetime import datetime, timedelta

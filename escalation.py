@@ -1,5 +1,5 @@
 """
-Keiko Smart Escalation - Intelligent error handling and escalation
+Kiyomi Smart Escalation - Intelligent error handling and escalation
 
 Features:
 - Try to fix issues automatically first
@@ -181,7 +181,7 @@ After attempting the fix, report what you did and whether it worked."""
 
     try:
         # Determine working directory
-        working_dir = "/Users/richardechols/Apps"
+        working_dir = str(Path.home() / "Apps")
         if escalation.affected_project:
             from projects import get_project_by_name
             project = get_project_by_name(escalation.affected_project)
@@ -189,7 +189,7 @@ After attempting the fix, report what you did and whether it worked."""
                 working_dir = project.path
 
         process = await asyncio.create_subprocess_exec(
-            "/Users/richardechols/.local/bin/claude",
+            str(Path.home() / ".local" / "bin" / "claude"),
             "-p", full_prompt,
             "--dangerously-skip-permissions",
             cwd=working_dir,

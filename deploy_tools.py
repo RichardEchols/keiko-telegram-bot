@@ -1,5 +1,5 @@
 """
-Keiko Deploy Tools - Smart deployment with checks
+Kiyomi Deploy Tools - Smart deployment with checks
 
 This module provides:
 - Pre-deploy checks (build, lint, TypeScript)

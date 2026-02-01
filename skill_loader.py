@@ -1,5 +1,5 @@
 """
-Keiko Enhanced Skill Loader - Dynamic skill loading and management
+Kiyomi Enhanced Skill Loader - Dynamic skill loading and management
 
 Features:
 - Load skills from markdown files
@@ -14,6 +14,7 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
 from typing import Optional, Dict, List, Tuple, Any
+import os
 
 import pytz
 from config import TIMEZONE
@@ -21,9 +22,10 @@ from config import TIMEZONE
 logger = logging.getLogger(__name__)
 
 # Skill directories
-SKILLS_DIR = Path("/Users/richardechols/Apps/claude-skills")
+SKILLS_DIR = Path(os.getenv("KIYOMI_SKILLS_DIR", str(Path.home() / "kiyomi" / "skills")))
 EMPLOYEE_SKILLS_DIR = SKILLS_DIR / "employees"
 PROJECT_SKILLS_DIR = SKILLS_DIR / "projects"
+VERTICALS_DIR = Path(__file__).parent / "verticals"
 
 
 @dataclass
@@ -78,6 +80,21 @@ def scan_skills() -> Dict[str, Skill]:
             skill = _parse_skill_file(skill_file, "project")
             if skill:
                 skills[skill.name] = skill
+
+    # Scan verticals directory (starter pack skills)
+    if VERTICALS_DIR.exists():
+        for vertical_dir in VERTICALS_DIR.iterdir():
+            if vertical_dir.is_dir():
+                skills_subdir = vertical_dir / "skills"
+                if skills_subdir.exists():
+                    vertical_name = vertical_dir.name  # e.g. "lawyer", "content-creator"
+                    for skill_file in skills_subdir.glob("*.md"):
+                        try:
+                            skill = _parse_skill_file(skill_file, vertical_name)
+                            if skill:
+                                skills[skill.name] = skill
+                        except Exception as e:
+                            logger.error(f"Failed to parse {skill_file}: {e}")
 
     _skills_cache = skills
     _last_scan = now

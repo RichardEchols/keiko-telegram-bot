@@ -1,5 +1,5 @@
 """
-Keiko Voice Workflow - Complete voice-to-voice interaction
+Kiyomi Engine Voice Workflow - Complete voice-to-voice interaction
 
 Features:
 - Transcribe voice messages
@@ -112,7 +112,7 @@ async def _try_openai_whisper(audio_path: Path) -> Tuple[bool, str]:
         import openai
 
         # Load API key from env
-        env_file = Path("/Users/richardechols/Apps/.env.local")
+        env_file = Path(os.getenv("KIYOMI_ENV_FILE", str(Path.home() / ".env.local")))
         api_key = None
 
         if env_file.exists():

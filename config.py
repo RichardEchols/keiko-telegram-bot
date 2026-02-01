@@ -1,7 +1,8 @@
 """
-Keiko Configuration - All credentials and settings
+Kiyomi Engine Configuration - All credentials and settings
 """
 import os
+import json
 from pathlib import Path
 from dotenv import load_dotenv
 
@@ -11,27 +12,27 @@ load_dotenv()
 # ============================================
 # TELEGRAM
 # ============================================
-TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "8549475880:AAFGvXc3sP9XmzuYYZt6R-wKdAjwWGuaTok")
-ALLOWED_USER_IDS = [8295554376]  # ONLY Richard
+TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
+ALLOWED_USER_IDS = [int(x) for x in json.loads(os.getenv("ALLOWED_USER_IDS", "[]"))]
 
 # ============================================
-# RICHARD'S CONTACT INFO
+# OWNER CONTACT INFO
 # ============================================
-RICHARD_EMAIL = "richardbechols92@gmail.com"
-RICHARD_PHONE = "+14045529941"
-TIMEZONE = "America/New_York"
+OWNER_EMAIL = os.getenv("KIYOMI_OWNER_EMAIL", "")
+OWNER_PHONE = os.getenv("KIYOMI_OWNER_PHONE", "")
+TIMEZONE = os.getenv("KIYOMI_TIMEZONE", "UTC")
 
 # ============================================
 # BOT EMAIL (Gmail)
 # ============================================
-BOT_EMAIL = "richardecholsai@gmail.com"
+BOT_EMAIL = os.getenv("KIYOMI_BOT_EMAIL", "")
 BOT_EMAIL_PASSWORD = os.getenv("BOT_EMAIL_PASSWORD")
 
 # ============================================
 # TWILIO (SMS)
 # ============================================
-TWILIO_PHONE = "+18559394918"
-TWILIO_ACCOUNT_SID = os.getenv("TWILIO_ACCOUNT_SID", "ACa5efe19dc73b88d9d54e4aa904b2b095")
+TWILIO_PHONE = os.getenv("TWILIO_PHONE", "")
+TWILIO_ACCOUNT_SID = os.getenv("TWILIO_ACCOUNT_SID", "")
 TWILIO_AUTH_TOKEN = os.getenv("TWILIO_AUTH_TOKEN")
 
 # ============================================
@@ -43,21 +44,14 @@ FAL_API_KEY = os.getenv("FAL_KEY")
 GROK_API_KEY = os.getenv("GROK_API_KEY")
 GROK_API_BASE = "https://api.x.ai/v1"
 ELEVENLABS_API_KEY = os.getenv("ELEVENLABS_API_KEY")
-ELEVENLABS_VOICE_RICK = "jK2hyA4zXCYkb4uxC8VS"
-ELEVENLABS_VOICE_RICHARD = "lzZ0ATDHnN7wEsC4KSxt"
+ELEVENLABS_VOICE_IDS = json.loads(os.getenv("ELEVENLABS_VOICE_IDS", "{}"))
 
 # ============================================
 # SUPABASE
 # ============================================
-SUPABASE_URL = os.getenv("SUPABASE_URL", "https://dtfhraicexuerdxxybpo.supabase.co")
+SUPABASE_URL = os.getenv("SUPABASE_URL", "")
 SUPABASE_ANON_KEY = os.getenv("SUPABASE_ANON_KEY")
 SUPABASE_SERVICE_KEY = os.getenv("SUPABASE_SERVICE_KEY")
-
-# ============================================
-# YOUTUBE CHANNELS
-# ============================================
-YOUTUBE_RICHARDBECHOLS = "UCvZNH8z8q38CJ3Cqe1PMLCw"  # Vibe coding
-YOUTUBE_SCRIBBLESTOKES = "UCOrYIzxF9JIipnpt8sq7Bgg"  # Commentary
 
 # ============================================
 # PATHS
@@ -76,13 +70,9 @@ COMMITMENTS_FILE = WORKSPACE_DIR / "COMMITMENTS.md"
 HEARTBEAT_FILE = WORKSPACE_DIR / "HEARTBEAT.md"
 TOOLS_FILE = WORKSPACE_DIR / "TOOLS.md"
 
-# Richard's directories (allowed access)
-ALLOWED_DIRECTORIES = [
-    "/Users/richardechols/Apps/",
-    "/Users/richardechols/Desktop/Work/",
-    "/Users/richardechols/Documents/",
-    "/Users/richardechols/Downloads/",
-]
+# Allowed directories
+_home = str(Path.home())
+ALLOWED_DIRECTORIES = json.loads(os.getenv("KIYOMI_ALLOWED_DIRS", json.dumps([f"{_home}/Documents/", f"{_home}/Desktop/", f"{_home}/Downloads/"])))
 
 # ============================================
 # SCHEDULE
@@ -94,7 +84,15 @@ QUIET_HOURS_START = 23  # 11 PM
 QUIET_HOURS_END = 8     # 8 AM
 
 # ============================================
-# KEIKO IDENTITY
+# KIYOMI IDENTITY
 # ============================================
-BOT_NAME = "Keiko"
-BOT_EMOJI = "🦊"
+BOT_NAME = os.getenv("KIYOMI_BOT_NAME", "Kiyomi")
+BOT_EMOJI = os.getenv("KIYOMI_BOT_EMOJI", "✨")
+OWNER_NAME = os.getenv("KIYOMI_OWNER_NAME", "")
+
+# ============================================
+# MORNING BRIEF CONFIGURATION
+# ============================================
+OWNER_CITY = os.getenv("KIYOMI_OWNER_CITY", "New York")
+MORNING_BRIEF_SECTIONS = [s.strip() for s in os.getenv("KIYOMI_BRIEF_SECTIONS", "weather,news,tasks").split(",")]
+CUSTOM_BRIEF_SECTIONS = json.loads(os.getenv("KIYOMI_CUSTOM_BRIEF_SECTIONS", "[]"))

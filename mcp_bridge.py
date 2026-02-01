@@ -1,5 +1,5 @@
 """
-Keiko MCP Bridge - Connect to Claude Desktop MCP servers
+Kiyomi MCP Bridge - Connect to Claude Desktop MCP servers
 
 Features:
 - Discover available MCP servers from Claude Desktop config
@@ -212,7 +212,7 @@ async def mcp_fetch_url(url: str) -> Tuple[bool, str]:
 
 
 # ============================================
-# MCP ROUTING FOR KEIKO
+# MCP ROUTING FOR KIYOMI
 # ============================================
 
 def route_to_mcp(task: str) -> Optional[Tuple[str, str, Dict]]:
