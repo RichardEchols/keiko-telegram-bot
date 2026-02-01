@@ -3,7 +3,7 @@ Git Helper Plugin
 
 Quick git operations for all projects.
 """
-from plugin_system import KeikoPlugin
+from plugin_system import KiyomiPlugin
 
 PLUGIN_INFO = {
     'name': 'Git Helper',
@@ -18,7 +18,7 @@ PLUGIN_INFO = {
 }
 
 
-class Plugin(KeikoPlugin):
+class Plugin(KiyomiPlugin):
     """Git helper plugin."""
 
     def __init__(self, api):

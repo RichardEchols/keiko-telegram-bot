@@ -3,7 +3,7 @@ Quick Deploy Plugin
 
 Provides ultra-fast deployment shortcuts.
 """
-from plugin_system import KeikoPlugin
+from plugin_system import KiyomiPlugin
 
 PLUGIN_INFO = {
     'name': 'Quick Deploy',
@@ -19,7 +19,7 @@ PLUGIN_INFO = {
 }
 
 
-class Plugin(KeikoPlugin):
+class Plugin(KiyomiPlugin):
     """Quick deployment plugin."""
 
     def __init__(self, api):

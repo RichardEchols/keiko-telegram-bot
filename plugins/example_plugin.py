@@ -3,7 +3,7 @@ Example Keiko Plugin
 
 This demonstrates how to create a plugin for Keiko.
 """
-from plugin_system import KeikoPlugin
+from plugin_system import KiyomiPlugin
 
 # Plugin metadata - REQUIRED
 PLUGIN_INFO = {
@@ -16,11 +16,11 @@ PLUGIN_INFO = {
 }
 
 
-class Plugin(KeikoPlugin):
+class Plugin(KiyomiPlugin):
     """
     Example plugin implementation.
 
-    The class MUST be named 'Plugin' and inherit from KeikoPlugin.
+    The class MUST be named 'Plugin' and inherit from KiyomiPlugin.
     """
 
     def __init__(self, api):
